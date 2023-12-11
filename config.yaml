@@ -1,27 +1,140 @@
 PostgreSQL:
-  PROTOCOL: 'postgresql'
-  USERNAME: 'postgres'
-  PASSWORD: 'postgres'
-  HOSTNAME: 'localhost'
+  PROTOCOL: postgresql
+  USERNAME: fabrizio_iozzi
+  PASSWORD: "p8AHf,5K{b1'}OlV"
+  HOSTNAME: 34.28.220.35
   PORT: 5432
-  DATABASE: 'production'
-  PARAMETERS: ''  
+  DATABASE: Inkosi
+  SCHEMA: development
+  PARAMETERS: ""
 
-  COLLECTIONS:
-    Log: 'Logs'
-  
 MongoDB:
-  PROTOCOL: mongodb
-  USERNAME: test
-  PASSWORD: test
-  HOSTNAME: localhost
+  PROTOCOL: mongodb+srv
+  USERNAME: mongodb
+  PASSWORD: 4SfgTMaSen4i81vI
+  HOSTNAME: exam.9yilgpl.mongodb.net
   PORT: 27017
   DATABASE: production
-  PARAMETERS: ''
+  PARAMETERS: ""
   TLS: false
 
-API:
-  AllowedIPAddresses: '*'
-  TokenAuthentication: false
+  COLLECTIONS:
+    Log: Logs
+    Trade: Trades
 
-DockerInstance: false
+API:
+  AllowedIPAddresses: "*"
+  TokenAuthentication: true
+  IPAddressCorrespondence: false
+  TimeActivity:
+    days: 0
+    hours: 6
+    minutes: 30
+    seconds: 30
+  APIs:
+    - MetaTrader5
+
+Policies:
+  Administrator:
+    - ADMINISTRATOR_IFM_FULL_ACCESS
+    - ADMINISTRATOR_FM_FULL_ACCESS
+    - ADMINISTRATOR_PM_FULL_ACCESS
+  Investor:
+    - INVESTOR_DASHBOARD_VISUALISATION
+    - INVESTOR_SAMPLING_SCENARIOS
+    - INVESTOR_BACKTEST_ALL
+
+RiskManagement:
+  Models:
+
+TechnicalIndicators:
+  MovingAveragePeriod: 20
+
+DefaultAdministrators:
+  1234:
+    first_name: Mario Nicolò
+    second_name: De Matteis
+    email_address: marionicdematteis@admin.it
+    birthday: 1900-01-01
+    fiscal_code: test
+    password: test
+    policies:
+      - ADMINISTRATOR_IFM_FULL_ACCESS
+    active: True
+  5678:
+    first_name: Fabrizio
+    second_name: Iozzi
+    email_address: fabrizioiozzi@admin.it
+    birthday: 1900-01-01
+    fiscal_code: test
+    password: test
+    policies:
+      - ADMINISTRATOR_IFM_FULL_ACCESS
+    active: True
+
+DefaultInvestors:
+  - first_name: Mario Nicolò
+    second_name: De Matteis
+    email_address: marionicdematteis@investor.it
+    birthday: 1900-01-01
+    fiscal_code: test
+    password: test
+    policies:
+      - INVESTOR_DASHBOARD_VISUALISATION
+      - INVESTOR_SAMPLING_SCENARIOS
+      - INVESTOR_BACKTEST_ALL
+    active: True
+  - first_name: Fabrizio
+    second_name: Iozzi
+    email_address: fabrizioiozzi@investor.it
+    birthday: 1900-01-01
+    fiscal_code: test
+    password: test
+    policies:
+      - INVESTOR_DASHBOARD_VISUALISATION
+      - INVESTOR_SAMPLING_SCENARIOS
+      - INVESTOR_BACKTEST_ALL
+    active: True
+
+DefaultFunds:
+  DEMO1:
+    administrators:
+      - 1234
+    commission_type: percentual
+    commission_value: 0
+    risk_limits: False
+    raising_funds: True
+
+  DEMO2:
+    administrators:
+      - 5678
+    commission_type: percentual
+    commission_value: 0
+    risk_limits: False
+    raising_funds: True
+
+DefaultStrategies:
+  - id: TERMINAL
+    administrator_id: 1234
+    fund_names:
+      - DEMO1
+    category: GENERAL_PURPOSE
+  - id: API
+    administrator_id: 5678
+    fund_names:
+      - DEMO2
+    category: GENERAL_PURPOSE
+
+Backtesting:
+  Tickers:
+    - ^GSPC
+    - ^IXIC
+
+TradingTickers:
+  - US_500
+  - BTCUSD
+
+TradingRiskManagement:
+  Volume: 0.01
+  TakeProfit: 500
+  StopLoss: 500

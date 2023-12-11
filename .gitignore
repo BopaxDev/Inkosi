@@ -1,2 +1,14 @@
+README (for the Exam).pdf
+
+templates
+
 *.egg-info
+*.pages
+*.dtmp
+*.bkp
+*.log
+
+.DS_Store
+.env
+.vscode
 __pycache__
