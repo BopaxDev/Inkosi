@@ -1,10 +1,11 @@
 import logging
+from dataclasses import asdict
 
 from beartype import beartype
 
 from inkosi.database.mongodb.models import Log
-from inkosi.models.log import LogType
-from inkosi.utils.settings import get_mongodb_settings
+from inkosi.log.models import LogType
+from inkosi.utils.settings import get_mongodb_collection
 
 
 class Logger:
@@ -16,6 +17,39 @@ class Logger:
         formatter: str = "[%(asctime)s\t %(levelname)s\t %(name)s] %(message)s",
         **kwargs,
     ) -> None:
+        """
+        Initialize a custom logger instance.
+
+        Parameters:
+            module_name (str): The name of the module for which the logger is created.
+            log_filename (str | None, optional): The filename for the log file. Defaults
+                to "master.log".
+            level (int, optional): The logging level. Defaults to logging.DEBUG.
+            formatter (str, optional): The log message format. Defaults to
+                "[%(asctime)s\t %(levelname)s\t %(name)s] %(message)s".
+            **kwargs: Additional keyword arguments.
+
+        Attributes:
+            module_name (str): The name of the module for which the logger is created.
+            package_name (str | None): The name of the package if provided; otherwise,
+            None.
+            name (str): The logger name, including the package name if available.
+            formatter (str): The log message format.
+            logger (logging.Logger): The main logger instance.
+            file_handler (logging.FileHandler | None): The file handler for writing
+            logs to a file if log_filename is provided.
+            stream_handler (logging.StreamHandler): The stream handler for writing logs
+            to the console.
+            mongo_manager: The MongoDB manager instance if database information is
+            provided; otherwise, None.
+
+        Note:
+            This method initializes a custom logger instance for logging messages. It
+            supports logging to both a file (if log_filename is provided) and the
+            console. Additionally, it can initialize a MongoDB manager instance if
+            database information is provided in the keyword arguments.
+        """
+
         self.module_name = module_name
         self.package_name = None
 
@@ -74,6 +108,9 @@ class Logger:
             "database",
             None,
         ):
+            if isinstance(kwargs.get("database"), bool):
+                return
+
             from inkosi.database.mongodb.database import MongoDBInstance
 
             self.mongo_manager = MongoDBInstance()
@@ -82,70 +119,117 @@ class Logger:
         self,
         message: str,
     ) -> None:
+        """
+        Log a critical-level message and register it to the MongoDB database if
+        available.
+
+        Parameters:
+            message (str): The message to be logged.
+
+        Returns:
+            None
+        """
+
         self.logger.critical(
             msg=message,
         )
 
         self.__register_to_log__(
-            self.name,
-            LogType.CRITICAL,
-            message,
+            log_type=LogType.CRITICAL,
+            message=message,
         )
 
     def debug(
         self,
         message: str,
     ) -> None:
+        """
+        Log a debug-level message and register it to the MongoDB database if available.
+
+        Parameters:
+            message (str): The message to be logged.
+
+        Returns:
+            None
+        """
+
         self.logger.debug(
             msg=message,
         )
 
         self.__register_to_log__(
-            self.name,
-            LogType.DEBUG,
-            message,
+            log_type=LogType.DEBUG,
+            message=message,
         )
 
     def error(
         self,
         message: str,
     ) -> None:
+        """
+        Log an error-level message and register it to the MongoDB database if available.
+
+        Parameters:
+            message (str): The message to be logged.
+
+        Returns:
+            None
+        """
+
         self.logger.error(
             msg=message,
         )
 
         self.__register_to_log__(
-            self.name,
-            LogType.ERROR,
-            message,
+            log_type=LogType.ERROR,
+            message=message,
         )
 
     def info(
         self,
         message: str,
     ) -> None:
+        """
+        Log an info-level message and register it to the MongoDB database if available.
+
+        Parameters:
+            message (str): The message to be logged.
+
+        Returns:
+            None
+        """
+
         self.logger.info(
             msg=message,
         )
 
         self.__register_to_log__(
-            self.name,
-            LogType.INFO,
-            message,
+            log_type=LogType.INFO,
+            message=message,
         )
 
     def warn(
         self,
         message: str,
     ) -> None:
+        """
+        Log a warning-level message and register it to the MongoDB database if
+        available.
+
+        Parameters:
+            message (str): The message to be logged.
+
+        Returns:
+            None
+        """
+
         self.logger.warning(
             msg=message,
         )
 
         self.__register_to_log__(
-            self.name,
-            LogType.WARN,
-            message,
+            log_type=LogType.WARN,
+            message=message,
         )
 
     @beartype
@@ -154,14 +238,27 @@ class Logger:
         log_type: LogType,
         message: str,
     ) -> None:
+        """
+        Register a log entry to the MongoDB database if available.
+
+        Parameters:
+            log_type (LogType): The log type.
+            message (str): The log message.
+
+        Returns:
+            None
+        """
+
         if not self.mongo_manager:
             return
 
-        self.mongo_manager.database[get_mongodb_settings().COLLECTIONS.Log].insert_one(
-            Log(
-                PackageName=self.package_name,
-                ModuleName=self.module_name,
-                Level=log_type,
-                Message=message,
-            ).model_dump()
+        self.mongo_manager.database[get_mongodb_collection().Log].insert_one(
+            asdict(
+                Log(
+                    PackageName=self.package_name,
+                    ModuleName=self.module_name,
+                    Level=log_type,
+                    Message=message,
+                )
+            )
         )

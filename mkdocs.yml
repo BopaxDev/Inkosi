@@ -1,6 +1,6 @@
-site_name: project-name
-repo_url: https://github.com/BopaxDev/project-name
-repo_name: BopaxDev/project-name
+site_name: Inkosi
+repo_url: https://github.com/BopaxDev/Inkosi
+repo_name: BopaxDev/Inkosi
 theme:
   favicon:
   logo:
@@ -15,19 +15,29 @@ theme:
     - navigation.sections
     - navigation.indexes
     - navigation.top
+    - navigation.footer
     - toc.integrate
 
 extra:
   # hide `Made with Material for MkDocs` footer
   generator: false
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/BopaxDev
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/mario-nicolo-de-matteis
+    - icon: fontawesome/brands/x-twitter
+      link: https://twitter.com/MDMatteis
+    - icon: fontawesome/solid/paper-plane
+      link: mailto:marionicdematteis@gmail.com
 
 plugins:
   - search
   - mkdocstrings:
       handlers:
-        python:
-          options:
-            docstring_style: numpy
+        options:
+          paths: [ src ]
+          docstring_style: numpy
 
 markdown_extensions:
   - pymdownx.superfences:
@@ -48,3 +58,5 @@ markdown_extensions:
 
   # embed code
   - pymdownx.snippets
+
+copyright: Copyright &copy; 2023 - Mario Nicolò De Matteis
